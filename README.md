@@ -35,7 +35,8 @@ python MelodyExtractionFromSingleWav.py /inputaudiofolder/audio1.wav /estimation
 
 where %input is the path to a wav file, and output is the file with the estimated melody.
 
-To run contour classification experiments, you should first compute and save the contours, and adapt the paths, as well as the hopsize.
+To run contour classification experiments, you should first compute and save the contours, and adapt the paths, as well as the hopsize:
 
 python run_contour_training_melody_extraction.py
+
 python run_glass_ceiling_experiment.py

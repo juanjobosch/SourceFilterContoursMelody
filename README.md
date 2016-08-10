@@ -29,21 +29,11 @@ scipy
 seaborn
 sklearn
 
-In order to execute the algorithm evaluated in MIREX 2016, it should be called from the folder which contains the source code, as:
+In order to execute the algorithm evaluated in MIREX 2016 (BG1 and BG2 submissions), it should be called from the folder which contains the source code, as:
 
-python MelodyExtractionFromSingleWav.py %input %output
-
-for instance, to run the ISMIR2016 paper:
-python MelodyExtractionFromSingleWav.py /inputaudiofolder/audio1.wav /estimations/audio1.txt --extractionMethod='PCS' --hopsize=0.0058 --nb-iterations=30
-
-to run the configurations used in MIREX 2016 (BG1 and BG2 submissions):
 python MelodyExtractionFromSingleWav.py /inputaudiofolder/audio1.wav /estimations/audio1.txt --extractionMethod='BG1' --hopsize=0.01 --nb-iterations=30
 
-
-
 where %input is the path to a wav file, and output is the file with the estimated melody.
-
-
 
 To run contour classification experiments, you should first compute and save the contours, and adapt the paths, as well as the hopsize.
 

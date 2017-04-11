@@ -114,25 +114,25 @@ def stft(data, window=sinebell(2048), hopsize=256.0, nfft=2048.0, \
 
     # !!! adding zeros to the beginning of data, such that the first
     # window is centered on the first sample of data
-    data = np.concatenate((np.zeros(lengthWindow / 2.0),data))
+    data = np.concatenate((np.zeros(int(lengthWindow / 2.0)),data))
     lengthData = data.size
 
     # adding one window for the last frame (same reason as for the
     # first frame)
-    numberFrames = np.ceil((lengthData - lengthWindow) / hopsize \
-                           + 1) + 1
+    numberFrames = int(np.ceil((lengthData - lengthWindow) / hopsize \
+                           + 1) + 1)
     newLengthData = (numberFrames - 1) * hopsize + lengthWindow
     # zero-padding data such that it holds an exact number of frames
-    data = np.concatenate((data, np.zeros([newLengthData - lengthData])))
+    data = np.concatenate((data, np.zeros([int(newLengthData - lengthData)])))
 
     # the output STFT has nfft/2+1 rows. Note that nfft has to be an
     # even number (and a power of 2 for the fft to be fast)
-    numberFrequencies = nfft / 2.0 + 1
+    numberFrequencies = int(nfft / 2.0 + 1)
 
     STFT = np.zeros([numberFrequencies, numberFrames], dtype=complex)
 
     for n in np.arange(numberFrames):
-        beginFrame = n * hopsize
+        beginFrame = int(n * hopsize)
         endFrame = beginFrame + lengthWindow
         frameToProcess = window * data[beginFrame:endFrame]
         STFT[:,n] = np.fft.rfft(frameToProcess, nfft);
@@ -413,13 +413,13 @@ def generateHannBasis(numberFrequencyBins, sizeOfFourier, Fs, \
                                       * (numberOfBasis - 1) + 1 \
                                       - 2.0 * overlap))
         # even window length, for convenience:
-        lengthSineWindow = 2.0 * np.floor(lengthSineWindow / 2.0)
+        lengthSineWindow = int(2.0 * np.floor(lengthSineWindow / 2.0))
 
         # for later compatibility with other frequency scales:
         mappingFrequency = np.arange(numberFrequencyBins)
 
         # size of the "big" window
-        sizeBigWindow = 2.0 * numberFrequencyBins
+        sizeBigWindow = int(2.0 * numberFrequencyBins)
 
         # centers for each window
         ## the first window is centered at, in number of window:
@@ -449,8 +449,8 @@ def generateHannBasis(numberFrequencyBins, sizeOfFourier, Fs, \
     # adding zeroes on both sides, such that we do not need to check
     # for boundaries
     bigWindow = np.zeros([sizeBigWindow * 2, 1])
-    bigWindow[(sizeBigWindow - lengthSineWindow / 2.0):\
-              (sizeBigWindow + lengthSineWindow / 2.0)] \
+    bigWindow[int(sizeBigWindow - lengthSineWindow / 2.0):\
+              int(sizeBigWindow + lengthSineWindow / 2.0)] \
               = np.vstack(prototypeSineWindow)
 
     WGAMMA = np.zeros([numberFrequencyBins, numberOfBasis])
@@ -462,14 +462,11 @@ def generateHannBasis(numberFrequencyBins, sizeOfFourier, Fs, \
 
     return WGAMMA
 
-def main(argsin):
-
-    import parsing
-    (args,options) = parsing.parseOptions(argsin)
+def main(args,options):
 
     stereoEstimation = True
 
-    # Harmonic Percussive Separation with median filtering in spectrogram
+    # Median filtering in spectrogram
     HPS = False
 
     displayEvolution = options.displayEvolution
@@ -559,7 +556,7 @@ def main(argsin):
     # number of iterations for each parameter estimation step:
     niter = options.nbiter
     # number of spectral shapes for the accompaniment
-    R = options.R
+    R = int(options.R)
 
     eps = 10 ** -9
 
@@ -595,8 +592,8 @@ def main(argsin):
     F, N = SX.shape
     stepNotes = options.stepNotes # this is the number of F0s within one semitone
 
-    K = options.K_numFilters # number of spectral shapes for the filter part
-    P = options.P_numAtomFilters # number of elements in dictionary of smooth filters
+    K = int(options.K_numFilters) # number of spectral shapes for the filter part
+    P = int(options.P_numAtomFilters) # number of elements in dictionary of smooth filters
     chirpPerF0 = 1 # number of chirped spectral shapes between each F0
     # this feature should be further studied before
     # we find a good way of doing that.
@@ -775,27 +772,27 @@ def main(argsin):
                     np.outer(chirpPerF0 * indexBestPath,
                              np.ones(chirpPerF0 \
                                      * (2 \
-                                        * np.floor(stepNotes / scopeAllowedHF0) \
+                                        * int(np.floor(stepNotes / scopeAllowedHF0)) \
                                         + 1))) \
                     + np.outer(np.ones(N),
                                np.arange(-chirpPerF0 \
-                                         * np.floor(stepNotes / scopeAllowedHF0),
+                                         * int(np.floor(stepNotes / scopeAllowedHF0)),
                                          chirpPerF0 \
-                                         * (np.floor(stepNotes / scopeAllowedHF0) \
-                                            + 1))),
+                                         * int((np.floor(stepNotes / scopeAllowedHF0))) \
+                                            + 1)),
                     chirpPerF0 * NF0 - 1),
                 0),
             dtype=int).reshape(1, N * chirpPerF0 \
-                               * (2 * np.floor(stepNotes / scopeAllowedHF0) \
+                               * (2 * int(np.floor(stepNotes / scopeAllowedHF0)) \
                                   + 1))
         dim2index = np.outer(np.arange(N),
                              np.ones(chirpPerF0 \
-                                     * (2 * np.floor(stepNotes \
-                                                     / scopeAllowedHF0) + 1), \
+                                     * (2 * int(np.floor(stepNotes \
+                                                     / scopeAllowedHF0)) + 1), \
                                      dtype=int)\
                              ).reshape(1, N * chirpPerF0 \
-                                       * (2 * np.floor(stepNotes \
-                                                       / scopeAllowedHF0) \
+                                       * (2 * int(np.floor(stepNotes \
+                                                       / scopeAllowedHF0)) \
                                           + 1))
         HF00[dim1index, dim2index] = HF0[dim1index, dim2index]# HF0.max()
 
@@ -818,11 +815,14 @@ def main(argsin):
         ind_999 = np.nonzero(energyMelCumulNorm>thres_energy)[0][0]
         if ind_999 is None:
             ind_999 = N
+        if not os.path.isdir(os.path.dirname((options.vit_pitch_output_file))):
+            os.mkdir(os.path.dirname((options.vit_pitch_output_file)))
 
         np.savetxt(options.vit_pitch_output_file+'.egy',
                    np.array([np.arange(N) * hopsize / np.double(Fs),
                              energyMel]).T,fmt='%10.5f')
 
+        # energyMel <= energyMelCumul[ind_999]?
 
         melNotPresent = (energyMel <= energyMelCumulNorm[ind_999])
 

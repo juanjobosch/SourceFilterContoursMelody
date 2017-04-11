@@ -125,11 +125,13 @@ def parseOptions(argsin,wavfilerequired = False):
                       help="pitch continuity cue (maximum allowed pitch change durig 1 ms time period) [cents]")
 
     parser.add_option("--extractionMethod", dest="extractionMethod", type="string",
-                      help="name of the method to be executed, if None, default is PCS (Pitch Contour Selection)",
-                      default="PCS")
+                      help="name of the method to be executed, if None, default is BG2, with PCS (Pitch Contour Selection)",
+                      default="BG2")
 
     (options, args) = parser.parse_args(argsin)
-
+    # if the argument is not given with -i
+    if len(args)>0:
+        options.input_file = args[0]
     options.hopsizeInSamples = int(round(options.hopsize*options.Fs))
 
     if ((len(args) < 1) & wavfilerequired):
@@ -249,7 +251,7 @@ def parseOptionsSS(argsin,wavfilerequired = True):
     (options, args) = parser.parse_args(argsin)
 
     options.hopsizeInSamples = int(round(options.hopsize*options.Fs))
-
+    options.input_file = args[0]
     if (len(args) != 1 & wavfilerequired):
         parser.error("incorrect number of arguments, use option -h for help.")
 

@@ -112,11 +112,11 @@ def MEFromSF(times, SF, options):
 
     # Initialise methods:
 
-    # Initialise Pitch contour selection: from contours, extracting melody using salamon2012 as mplemented in Essentia
+    # Initialise Pitch contour selection: from contours, extracting melody using salamon2012 as implemented in Essentia
 
     run_pitch_contours_melody = PitchContoursMelody(guessUnvoiced=True,
                                                     binResolution=int(stepNotes),
-                                                    hopSize=int(hopsize), voicingTolerance=int(voicingTolerance),
+                                                    hopSize=int(hopsize), voicingTolerance=voicingTolerance,
                                                     voiceVibrato=voiceVibrato,
                                                     referenceFrequency=options.minF0,
                                                     minFrequency=options.minF0)
@@ -139,10 +139,10 @@ def MEFromSF(times, SF, options):
     pool = Pool()
 
     # For all frames, compute salience peaks, and save their salience and bin
-    for index in range(0, np.size(times) - 1, 1):
+    for index in range(SF.shape[1]):
         # The vector should be of size 600 if we have 10 bins/semitone (total 6000)
         SALsalience_peaks_bins, SALsalience_peaks_saliences = run_pitch_salience_function_peaks(
-            np.array(np.append((np.array(SF[1:601, index])), np.zeros(max(0, 600 - Nbins))), 'float32'))
+            np.array(np.append((np.array(SF[0:600, index])), np.zeros(max(0, 600 - Nbins))), 'float32'))
         if (len(SALsalience_peaks_bins) == 0):
             SALsalience_peaks_bins = [1.0]
             SALsalience_peaks_saliences = [1e-15]
@@ -162,7 +162,7 @@ def MEFromSF(times, SF, options):
 
     if (NContours > 0):
 
-        if options.extractionMethod == 'PCS':
+        if options.decodingMethod == "PCS":
             # Extract melody from contours using Pitch Contour Selection
             allpitch, confidence = run_pitch_contours_melody(contours_bins_SAL,
                                                              contours_saliences_SAL,
@@ -176,7 +176,7 @@ def MEFromSF(times, SF, options):
             L = min(len(pitch), len(times))
             pitch = pitch[0:L]
             times = times[0:L]
-        # If contour need to be saved for pitch contour classification, we compute the the contour data
+        # If contours need to be saved for pitch contour classification, we compute the the contour data
         if options.saveContours:
             extraFeatures = None
             try:

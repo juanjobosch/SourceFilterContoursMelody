@@ -2,7 +2,7 @@
 import numpy as np
 
 
-def combine2(timesHF0, HF0init, timesHSSF, HSSF, G=0, mu=1, doConvolution=True):
+def combine2(timesHF0, HF0init, timesHSSF, HSSF, G=0, mu=1, doConvolution=True,HF0norm='max'):
     """ Combines HF0 (based on SIMM) and HS (Harmonic summation)
         Parameters
     ----------
@@ -60,7 +60,13 @@ def combine2(timesHF0, HF0init, timesHSSF, HSSF, G=0, mu=1, doConvolution=True):
             print "Error in plotting"
 
     # Frame-wise normalisation dividing by the max on each frame
-    HF0init = (HF0init / (np.outer(np.ones(HF0init.shape[0]), np.max(HF0init, 0)) + 1e-15))
+    if HF0norm == 'max':
+        HF0init = (HF0init / (np.outer(np.ones(HF0init.shape[0]), np.max(HF0init, 0)) + 1e-15))
+
+    # Frame-wise normalisation dividing by the sum on each frame
+    if HF0norm == 'sum':
+        HF0init = (HF0init / (np.outer(np.ones(HF0init.shape[0]), np.sum(HF0init, 0)) + 1e-15))
+
 
     # Gaussian filtering
     if doConvolution:
@@ -178,6 +184,15 @@ def simpleResize(timesHF0, HF0init, timesHSSF, HSSF):
             timesHSSF = np.arange(timesHSSF[0], timesHSSF[-1] + (n - 1) * hop, hop)
     return timesHF0, HF0init, timesHSSF, HSSF
 
+def combine14(timesHF0, HF0init, timesHSSF, HSSF, G, mu, doConvolution):
+
+    timesHF0, HF0init, timesHSSF, HSSF = simpleResize(timesHF0, HF0init, timesHSSF, HSSF)
+
+    # if (HSSF.T.shape != HF0init.shape):
+    #    HF0init = interpolateSaliences(HSSF.T,HF0init,timesHSSF,timesHF0)
+
+    times, sal = combine2(timesHF0, HF0init, timesHSSF, HSSF, G, mu, doConvolution,HF0norm='sum')
+    return times, sal
 
 def combine3MIREX(timesHF0, HF0init, timesHSSF, HSSF, G, mu, doConvolution):
     """ Combines HF0 and HS, used in MIREX (2015,2016), SMC2016 and ISMIR2016
@@ -204,3 +219,4 @@ def combine3MIREX(timesHF0, HF0init, timesHSSF, HSSF, G, mu, doConvolution):
     # Combine both matrices
     times, sal = combine2(tHF0, HF0in, tHSSF, HSSFin, G, mu, doConvolution)
     return times, sal
+

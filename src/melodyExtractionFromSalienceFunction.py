@@ -4,6 +4,7 @@ import sys, os
 from essentia import *
 from essentia.standard import *
 import contourExtraction as ce
+import numpy as np
 
 
 def MEFromFileNumInFolder(salsfolder, outfolder, fileNum, options):
@@ -108,8 +109,6 @@ def MEFromSF(times, SF, options):
 
     voicingTolerance = options.voicingTolerance
 
-    import numpy as np
-
     # Initialise methods:
 
     # Initialise Pitch contour selection: from contours, extracting melody using salamon2012 as implemented in Essentia
@@ -176,6 +175,9 @@ def MEFromSF(times, SF, options):
             L = min(len(pitch), len(times))
             pitch = pitch[0:L]
             times = times[0:L]
+        else:
+            print "No decoding using Pitch Contour Selection"
+
         # If contours need to be saved for pitch contour classification, we compute the the contour data
         if options.saveContours:
             extraFeatures = None

@@ -247,17 +247,17 @@ def generate_WF0_chirped(minF0, maxF0, Fs, Nfft=2048, stepNotes=4, \
     stepNotes=np.double(stepNotes)
 
     # computing the F0 table:
-    numberOfF0 = np.ceil(12.0 * stepNotes * np.log2(maxF0 / minF0)) + 1
+    numberOfF0 = int(np.ceil(12.0 * stepNotes * np.log2(maxF0 / minF0)) + 1)
     F0Table=minF0 * (2 ** (np.arange(numberOfF0,dtype=np.double) \
                            / (12 * stepNotes)))
 
-    numberElementsInWF0 = numberOfF0 * perF0
+    numberElementsInWF0 = int(numberOfF0 * perF0)
 
     # computing the desired WF0 matrix
     WF0 = np.zeros([Nfft, numberElementsInWF0],dtype=np.double)
     for fundamentalFrequency in np.arange(numberOfF0):
         odgd, odgdSpec = \
-              generate_ODGD_spec(F0Table[fundamentalFrequency], Fs, \
+              generate_ODGD_spec(F0Table[int(fundamentalFrequency)], Fs, \
                                  Ot=Ot, lengthOdgd=lengthWindow, \
                                  Nfft=Nfft, t0=0.0,\
                                  analysisWindowType=analysisWindow) # 20100924 trying with hann window

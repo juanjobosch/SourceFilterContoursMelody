@@ -130,12 +130,20 @@ def parseOptions(argsin,wavfilerequired = False):
 
     (options, args) = parser.parse_args(argsin)
     # if the argument is not given with -i
+
     if len(args)>0:
         options.input_file = args[0]
+
+    if len(args) > 1:
+        options.pitch_output_file = args[1]
+
     options.hopsizeInSamples = int(round(options.hopsize*options.Fs))
 
     if ((len(args) < 1) & wavfilerequired):
         parser.error("incorrect number of arguments, use option -h for help.")
+
+    if options.pitch_output_file is None:
+        options.pitch_output_file = options.input_file+'_pitches.txt'
 
     return args, options
 
@@ -254,5 +262,8 @@ def parseOptionsSS(argsin,wavfilerequired = True):
     options.input_file = args[0]
     if (len(args) != 1 & wavfilerequired):
         parser.error("incorrect number of arguments, use option -h for help.")
+
+    if options.pitch_output_file is None:
+        options.pitch_output_file = options.input_file+'_pitches.txt'
 
     return args, options    

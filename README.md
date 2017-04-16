@@ -51,6 +51,11 @@ python MelodyExtractionFromSingleWav.py /inputaudiofolder/audio1.wav /estimation
 
 where %input is the path to a wav file, and output is the file with the estimated melody.
 
+It is possible tu also run the extraction using only Harmonic Summation instead of using source filter models.
+This option would be similar to the plugin MELODIA, but using the open source implementation in Essentia.
+This way, you can also save contours as those used in Bittner 2015 ISMIR article (and later use for within a Pitch Contour Classification method)
+To do so use the option:
+--extractionMethod='SAL'
 
 
 To run contour classification experiments, you should first compute and save the contours, and adapt the paths accordingly.

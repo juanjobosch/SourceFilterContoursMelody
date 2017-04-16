@@ -53,6 +53,18 @@ def process(args):
         options.combmode = 14
         options.decodingMethod = "PCS"
 
+    if options.extractionMethod == "SAL":
+        # Creating contours based on HS, and PCS like in Melodia, but here computed with essentia instead of the modified MELODIA VAMP plugin
+        # Can be used to generate contours using HS like in Bittner 2015 (ISMIR), but here computed with essentia instead of the modified MELODIA VAMP plugin
+        options.combmode = 0
+        options.pitchContinuity = 27.56
+        options.peakDistributionThreshold = 0.9
+        options.peakFrameThreshold = 0.9
+        options.timeContinuity = 100
+        options.minDuration = 100
+        options.decodingMethod = "PCS"
+        options.useVibrato = True
+
     if options.extractionMethod == "CBM":
         options.pitchContinuity = 27.56
         options.peakDistributionThreshold = 0.9
@@ -82,6 +94,10 @@ def process(args):
         print "Harmonic Summation Salience function not used"
 
     # Combination mode used in MIREX, ISMIR2016, SMC2016
+    if combmode == 0:
+        combSal = HSSF.T
+        times = timesHSSF
+
     if combmode == 13:
         times, combSal = combineSaliences.combine3MIREX(timesHF0, HF0, timesHSSF, HSSF, G, mu, doConvolution)
 
@@ -98,8 +114,9 @@ def process(args):
     times, pitch = melodyExtractionFromSalienceFunction.MEFromSF(times, combSal, options)
 
     # Save output file
-    savetxt(options.pitch_output_file, column_stack((times.T, pitch.T)), fmt='%-7.5f', delimiter="\t")
-    print("Output file written")
+    if options.decodingMethod != "PCC":
+        savetxt(options.pitch_output_file, column_stack((times.T, pitch.T)), fmt='%-7.5f', delimiter="\t")
+        print("Output file written")
 
 
 def main(args):

@@ -157,7 +157,7 @@ def MEFromSF(times, SF, options):
     print 'NContours %d' % NContours
     pitch = np.zeros(len(times))
 
-    options.saveContours = True
+    options.saveContours = False
 
     if (NContours > 0):
 

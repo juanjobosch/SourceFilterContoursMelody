@@ -464,7 +464,7 @@ def generateHannBasis(numberFrequencyBins, sizeOfFourier, Fs, \
 
 def main(args,options):
 
-    stereoEstimation = True
+    stereoEstimation = False
 
     # Median filtering in spectrogram
     HPS = False
@@ -506,12 +506,13 @@ def main(args,options):
         audio = loaded[0]
         Fs = loaded[1]
         nchan = loaded[2]
+
         loaded = AudioLoader(filename = inputAudioFile)()
         audio = loaded[0]
         if nchan == 1:
             data = audio[:,0].transpose()
         else:
-            data = audio.transpose()
+            data = audio
 
         data = np.double(data)/(1.2*abs(data).max())
     except:
@@ -523,7 +524,7 @@ def main(args,options):
         data = np.double(data) / scaleData # makes data vary from -1 to 1
     options.Fs = Fs
     is_stereo = True
-    if data.shape[0] == data.size: # data is multi-channel
+    if data.shape[0] == data.size:
         #print "The audio file is not stereo."
         #print "The audio file is not stereo. Making stereo out of mono."
         #print "(You could also try the older separateLead.py...)"
@@ -579,6 +580,7 @@ def main(args,options):
         #SXR = np.abs(XR) ** 2
         #SXL = np.abs(XL) ** 2
         SX = np.maximum((0.5*np.abs(XR+XL)) ** 2, eps)
+
     else: # data is mono
         X, F, N = stft(data, fs=Fs, hopsize=hopsize,
                        window=sinebell(windowSizeInSamples), nfft=NFT)

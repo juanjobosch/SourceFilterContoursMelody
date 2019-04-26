@@ -142,16 +142,34 @@ def MEFromSF(times, SF, options):
         # The vector should be of size 600 if we have 10 bins/semitone (total 6000)
         SALsalience_peaks_bins, SALsalience_peaks_saliences = run_pitch_salience_function_peaks(
             np.array(np.append((np.array(SF[0:600, index])), np.zeros(max(0, 600 - Nbins))), 'float32'))
-        if (len(SALsalience_peaks_bins) == 0):
-            SALsalience_peaks_bins = [1.0]
-            SALsalience_peaks_saliences = [1e-15]
+        if (len(SALsalience_peaks_bins) == 0) or (len(SALsalience_peaks_saliences) == 0):
+            SALsalience_peaks_bins = np.array([1], 'int')
+            SALsalience_peaks_saliences = np.array([0.00000000000000000001], 'float32')
         pool.add('allframes_SALsalience_peaks_saliences', SALsalience_peaks_saliences)
         pool.add('allframes_SALsalience_peaks_bins', SALsalience_peaks_bins)
 
     # Create contours using previouslly computed peaks
+    #print pool['allframes_SALsalience_peaks_bins']
+    #print pool['allframes_SALsalience_peaks_saliences']
+
     contours_bins_SAL, contours_saliences_SAL, contours_start_times_SAL, durationSAL = run_pitch_contours(
-        pool['allframes_SALsalience_peaks_bins'],
-        pool['allframes_SALsalience_peaks_saliences'])
+        [arr.tolist() for arr in pool['allframes_SALsalience_peaks_bins']],
+        [arr.tolist() for arr in pool['allframes_SALsalience_peaks_saliences']])
+
+    contours_bins_SAL = [arr.tolist() for arr in contours_bins_SAL]
+    contours_saliences_SAL = [arr.tolist() for arr in contours_saliences_SAL]
+    contours_start_times_SAL = [arr.tolist() for arr in contours_start_times_SAL]
+
+    # length = len(sorted(pool['allframes_SALsalience_peaks_bins'], key=len, reverse=True)[0])
+    # salpBins = array([xi+[None]*(length-len(xi)) for xi in pool['allframes_SALsalience_peaks_bins']], dtype=single)
+
+    # contours_bins_SAL, contours_saliences_SAL, contours_start_times_SAL, durationSAL = run_pitch_contours(
+    #     [np.array(arr, dtype='int') for arr in pool['allframes_SALsalience_peaks_bins']],
+    #     pool['allframes_SALsalience_peaks_saliences'])
+
+    # contours_bins_SAL, contours_saliences_SAL, contours_start_times_SAL, durationSAL = run_pitch_contours(
+    #     np.array(pool['allframes_SALsalience_peaks_bins'],'float32'),
+    #     np.array((pool['allframes_SALsalience_peaks_saliences']), 'float32'))
 
     NContours = len(contours_bins_SAL)
     print 'NContours %d' % NContours
